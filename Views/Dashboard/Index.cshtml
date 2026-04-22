@@ -235,7 +235,7 @@
                                     <td>@lr.StartDate.ToString("yyyy-MM-dd")</td>
                                     <td>@lr.EndDate.ToString("yyyy-MM-dd")</td>
                                     <td>
-                                        <a asp-controller="LeaveRequest" asp-action="Review" asp-route-id="@lr.RequestId" class="btn btn-sm btn-primary">Review</a>
+                                        <a asp-controller="LeaveRequest" asp-action="Review" asp-route-requestId="@lr.RequestId" class="btn btn-sm btn-primary">Review</a>
                                     </td>
                                 </tr>
                             }

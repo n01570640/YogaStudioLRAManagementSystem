@@ -45,7 +45,18 @@
                         <tr>
                             <td>@item.StartDate.ToString()</td>
                             <td>@item.EndDate.ToString()</td>
-                            <td>@item.Status</td>
+                            <td>
+                                @{
+                                    var badgeClass = item.Status switch
+                                    {
+                                        var s when s == LeaveRequestStatus.APPROVED => "badge bg-success",
+                                        var s when s == LeaveRequestStatus.PENDING => "badge bg-warning text-dark",
+                                        var s when s == LeaveRequestStatus.DENIED => "badge bg-danger",
+                                        _ => "badge bg-secondary"
+                                    };
+                                }
+                                <span class="@badgeClass">@item.Status</span>
+                            </td>
                             <td>@item.Reason</td>
                             <td>
                                 <a asp-action="Details" asp-route-requestId="@item.RequestId"
@@ -90,7 +101,18 @@
                             <td>@item.Employee.EmployeeId</td>
                             <td>@item.StartDate.ToString()</td>
                             <td>@item.EndDate.ToString()</td>
-                            <td>@item.Status</td>
+                            <td>
+                                @{
+                                    var badgeClass = item.Status switch
+                                    {
+                                        var s when s == LeaveRequestStatus.APPROVED => "badge bg-success",
+                                        var s when s == LeaveRequestStatus.PENDING => "badge bg-warning text-dark",
+                                        var s when s == LeaveRequestStatus.DENIED => "badge bg-danger",
+                                        _ => "badge bg-secondary"
+                                    };
+                                }
+                                <span class="@badgeClass">@item.Status</span>
+                            </td>
                             <td>@item.Reason</td>
                             <td>
                                 <a asp-action="Details" asp-route-requestId="@item.RequestId"
@@ -146,7 +168,18 @@
                             <td>@item.Employee.EmployeeId</td>
                             <td>@item.StartDate.ToString()</td>
                             <td>@item.EndDate.ToString()</td>
-                            <td>@item.Status</td>
+                            <td>
+                                @{
+                                    var badgeClass = item.Status switch
+                                    {
+                                        var s when s == LeaveRequestStatus.APPROVED => "badge bg-success",
+                                        var s when s == LeaveRequestStatus.PENDING => "badge bg-warning text-dark",
+                                        var s when s == LeaveRequestStatus.DENIED => "badge bg-danger",
+                                        _ => "badge bg-secondary"
+                                    };
+                                }
+                                <span class="@badgeClass">@item.Status</span>
+                            </td>
                             <td>@item.Reason</td>
                             <td>
                                 <a asp-action="Details" asp-route-requestId="@item.RequestId"
