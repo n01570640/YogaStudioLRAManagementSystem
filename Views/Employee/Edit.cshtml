@@ -1,0 +1,71 @@
+@model YogaStudioLRAManagementSystem.Models.Employee
+@{
+    ViewData["Title"] = "Edit Employee";
+}
+
+<h2>Edit Employee</h2>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form asp-action="Edit" method="post">
+            @Html.AntiForgeryToken()
+
+            @* Hidden field so the POST action receives the EmployeeId *@
+            <input type="hidden" asp-for="EmployeeId" />
+
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="FirstName" class="form-label"></label>
+                    <input asp-for="FirstName" class="form-control" />
+                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="LastName" class="form-label"></label>
+                    <input asp-for="LastName" class="form-control" />
+                    <span asp-validation-for="LastName" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="StudioRoleId" class="form-label">Studio Role</label>
+                <select asp-for="StudioRoleId" class="form-select"
+                        asp-items="@(ViewBag.StudioRoles as SelectList)">
+                    <option value="">-- Select Role --</option>
+                </select>
+                <span asp-validation-for="StudioRoleId" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Certification" class="form-label"></label>
+                <input asp-for="Certification" class="form-control" />
+                <span asp-validation-for="Certification" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="HireDate" class="form-label"></label>
+                <input asp-for="HireDate" class="form-control" type="date" />
+                <span asp-validation-for="HireDate" class="text-danger"></span>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="VacationBalance" class="form-label">Vacation Balance (days)</label>
+                    <input asp-for="VacationBalance" class="form-control" type="number" />
+                    <span asp-validation-for="VacationBalance" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="SickLeaveBalance" class="form-label">Sick Leave Balance (days)</label>
+                    <input asp-for="SickLeaveBalance" class="form-control" type="number" />
+                    <span asp-validation-for="SickLeaveBalance" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>

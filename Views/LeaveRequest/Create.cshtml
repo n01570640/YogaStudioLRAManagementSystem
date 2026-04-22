@@ -1,0 +1,83 @@
+﻿@using YogaStudioLRAManagementSystem.Constants
+@using System.Security.Claims
+@model YogaStudioLRAManagementSystem.Models.LeaveRequest
+
+
+@{
+    ViewData["Title"] = "Create Leave Request";
+
+    var employeeId = User.FindFirstValue("EmployeeId");
+}
+
+<h1>Create Leave Request</h1>
+
+<hr />
+
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["Error"]
+    </div>
+}
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Success"]
+    </div>
+}
+
+<div class="card shadow-sm">
+    <div class="card-body">
+
+        <form asp-action="Create" method="post" asp-controller="LeaveRequest">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="mb-3">
+                <label asp-for="StartDate" class="form-label">Start Date</label>
+                <input asp-for="StartDate" class="form-control" type="date" />
+                <span asp-validation-for="StartDate" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="EndDate" class="form-label">End Date</label>
+                <input asp-for="EndDate" class="form-control" type="date" />
+                <span asp-validation-for="EndDate" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Reason" class="control-label"></label>
+                <textarea asp-for="Reason" class="form-control"></textarea>
+                <span asp-validation-for="Reason" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="LeaveTypeId" class="form-label">Leave Type</label>
+                <select asp-for="LeaveTypeId"
+                        class="form-select"
+                        asp-items="ViewBag.LeaveTypeId">
+                </select>
+                <span asp-validation-for="LeaveTypeId" class="text-danger"></span>
+            </div>
+
+            <input type="hidden" asp-for="EmployeeId" value="@employeeId"/>
+            <input type="hidden" asp-for="Status" value="@LeaveRequestStatus.PENDING" />
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    Submit Request
+                </button>
+                <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+
+    </div>
+</div>  
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

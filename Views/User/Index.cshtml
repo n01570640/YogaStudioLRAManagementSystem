@@ -1,0 +1,93 @@
+﻿@model IEnumerable<YogaStudioLRAManagementSystem.ViewModels.UserViewModel>
+@using YogaStudioLRAManagementSystem.Constants
+
+@{
+    ViewData["Title"] = "Users";
+}
+
+<h2>Users</h2>
+
+<a asp-action="Register" asp-controller="Auth" class="btn btn-primary mb-3">Register User</a>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">No users found.</div>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Employee</th>
+                <th>Status</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model)
+            {
+                <tr>
+                    <td>@user.UserName</td>
+                    <td>@user.EmailAddress</td>
+                    <td>
+                        @{
+                            var badgeClass = user.Role switch
+                            {
+                                UserRoles.ADMIN => "badge bg-danger",
+                                UserRoles.MANAGER => "badge bg-warning text-dark",
+                                UserRoles.STAFF => "badge bg-success",
+                                _ => "badge bg-secondary"
+                            };
+                        }
+                        <span class="@badgeClass">@user.Role</span>
+                    </td>
+                    <td>@user.EmployeeName</td>
+                    <td>
+                        @if (user.IsActive)
+                        {
+                            <span class="badge bg-success">Active</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">Inactive</span>
+                        }
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@user.UserId" class="btn btn-sm btn-warning">Edit</a>
+
+                        @* Reset Password *@
+                        <a asp-action="ResetPassword" asp-route-id="@user.UserId" class="btn btn-sm btn-info">Reset Password</a>
+
+                        @* Deactivate or Reactivate *@
+                        @if (user.IsActive)
+                        {
+                            <a asp-action="Deactivate" asp-route-userId="@user.UserId"
+                               class="btn btn-sm btn-danger">Deactivate</a>
+                        }
+                        else
+                        {
+                            <form asp-action="Reactivate" method="post" class="d-inline">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="userId" value="@user.UserId" />
+                                <button type="submit" class="btn btn-sm btn-success">Reactivate</button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

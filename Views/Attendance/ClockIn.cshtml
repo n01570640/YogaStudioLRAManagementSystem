@@ -1,0 +1,138 @@
+﻿@model YogaStudioLRAManagementSystem.Models.Attendance?
+
+@{
+    ViewData["Title"] = "Clock In";
+    var jwt = ViewBag.JwtToken as string;
+    var apiBase = "https://localhost:7219"; //Yoga Attendance API port
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body text-center p-5">
+
+                    <h2 class="mb-1">@DateTime.Today.ToString("dddd, MMMM dd yyyy")</h2>
+                    <p class="text-muted mb-4">@DateTime.Now.ToString("hh:mm tt")</p>
+
+                    @*ON LEAVE *@
+                    @if (Model != null && Model.Status == "On Leave")
+                    {
+                        <div class="alert alert-info">
+                            <h5>You are on approved leave today.</h5>
+                            <p class="mb-0">No clock in required.</p>
+                        </div>
+                    }
+
+                    @* ALREADY CLOCKED OUT *@
+                    else if (Model != null && Model.ClockOut != null)
+                    {
+                        <div class="alert alert-success">
+                            <h5>Your shift is complete for today.</h5>
+                            <p>Clock In: <strong>@Model.ClockIn?.ToString("hh:mm tt")</strong></p>
+                            <p>Clock Out: <strong>@Model.ClockOut?.ToString("hh:mm tt")</strong></p>
+                            <p class="mb-0">Total Hours: <strong>@Model.TotalHours?.ToString("F2")</strong></p>
+                        </div>
+                    }
+
+                    @* CLOCKED IN, NOT YET OUT *@
+                    else if (Model != null && Model.ClockIn != null)
+                    {
+                        <div class="alert alert-warning mb-4">
+                            <p class="mb-0">Clocked in at <strong>@Model.ClockIn?.ToString("hh:mm tt")</strong></p>
+                        </div>
+                        <button id="clockOutBtn" class="btn btn-danger btn-lg w-100">Clock Out</button>
+                        <div id="statusMessage" class="mt-3"></div>
+                    }
+
+                    @* NOT YET CLOCKED IN *@
+                    else
+                    {
+                        <p class="text-muted mb-4">You have not clocked in yet today.</p>
+                        <button id="clockInBtn" class="btn btn-success btn-lg w-100">Clock In</button>
+                        <div id="statusMessage" class="mt-3"></div>
+                    }
+
+                    <div class="mt-4">
+                        <a asp-action="Index" class="text-muted small">View my attendance history</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const jwt = '@jwt';
+        const apiBase = '@apiBase';
+
+        // clock in button
+        const clockInBtn = document.getElementById('clockInBtn');
+        if (clockInBtn) {
+            clockInBtn.addEventListener('click', async function () {
+                clockInBtn.disabled = true;
+                clockInBtn.textContent = 'Clocking in...';
+
+                try {
+                    const response = await fetch(`${apiBase}/api/attendance/clockin`, {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${jwt}` }
+                    });
+
+                    const message = await response.text();
+
+                    if (response.ok) {
+                        // reload page to reflect new state
+                        location.reload();
+                    } else {
+                        showMessage(message, 'danger');
+                        clockInBtn.disabled = false;
+                        clockInBtn.textContent = 'Clock In';
+                    }
+                } catch (err) {
+                    showMessage('Could not reach the attendance service. Please try again.', 'danger');
+                    clockInBtn.disabled = false;
+                    clockInBtn.textContent = 'Clock In';
+                }
+            });
+        }
+
+        // clock out button
+        const clockOutBtn = document.getElementById('clockOutBtn');
+        if (clockOutBtn) {
+            clockOutBtn.addEventListener('click', async function () {
+                clockOutBtn.disabled = true;
+                clockOutBtn.textContent = 'Clocking out...';
+
+                try {
+                    const response = await fetch(`${apiBase}/api/attendance/clockout`, {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${jwt}` }
+                    });
+
+                    const message = await response.text();
+
+                    if (response.ok) {
+                        // reload page to reflect new state
+                        location.reload();
+                    } else {
+                        showMessage(message, 'danger');
+                        clockOutBtn.disabled = false;
+                        clockOutBtn.textContent = 'Clock Out';
+                    }
+                } catch (err) {
+                    showMessage('Could not reach the attendance service. Please try again.', 'danger');
+                    clockOutBtn.disabled = false;
+                    clockOutBtn.textContent = 'Clock Out';
+                }
+            });
+        }
+
+        function showMessage(message, type) {
+            const el = document.getElementById('statusMessage');
+            if (el) el.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+        }
+    </script>
+}

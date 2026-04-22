@@ -1,0 +1,76 @@
+﻿@model YogaStudioLRAManagementSystem.Models.LeaveRequest
+@using YogaStudioLRAManagementSystem.Constants
+
+@{
+    ViewData["Title"] = "Approve/Deny";
+}
+
+<h2>Review Leave Request</h2>
+
+<hr />
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["Error"]
+    </div>
+}
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Success"]
+    </div>
+}
+<div class="card shadow-sm">
+    <div class="card-body">
+        <dl class="row">
+
+            <dt class="col-sm-2">Request ID</dt>
+            <dd class="col-sm-10">@Model.RequestId</dd>
+
+            <dt class="col-sm-2">Employee</dt>
+            <dd class="col-sm-10">@Model.Employee.FirstName, @Model.Employee.LastName</dd>
+
+            <dt class="col-sm-2">Start Date</dt>
+            <dd class="col-sm-10">@Model.StartDate.ToString("yyyy-MM-dd")</dd>
+
+            <dt class="col-sm-2">End Date</dt>
+            <dd class="col-sm-10">@Model.EndDate.ToString("yyyy-MM-dd")</dd>
+
+            <dt class="col-sm-2">Status</dt>
+            <dd class="col-sm-10">@Model.Status</dd>
+
+            <dt class="col-sm-2">Reason</dt>
+            <dd class="col-sm-10">@Model.Reason</dd>
+
+            <dt class="col-sm-2">Leave Type</dt>
+            <dd class="col-sm-10">@Model.LeaveType?.Name</dd>
+
+        </dl>
+    </div>
+</div>
+
+@if (Model.Status == LeaveRequestStatus.PENDING)
+{
+    <!-- Approve -->
+    <hr />
+    <form asp-action="Approve" method="post" style="display:inline;">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="requestId" value="@Model.RequestId" />
+        <button type="submit" class="btn btn-success">Approve</button>
+    </form>
+
+    <!-- Deny -->
+    <form asp-action="Deny" method="post" style="display:inline;">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="requestId" value="@Model.RequestId" />
+        <button type="submit" class="btn btn-danger">Deny</button>
+    </form>
+}
+else
+{
+    <p class="alert-info mt-3"><strong>This request has already been processed.</strong></p>
+}
+
+
+<a asp-action="Index" class="btn btn-primary">Back to List</a>

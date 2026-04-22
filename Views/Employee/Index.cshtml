@@ -1,0 +1,64 @@
+@model IEnumerable<YogaStudioLRAManagementSystem.Models.Employee>
+@{
+    ViewData["Title"] = "Employees";
+}
+
+<h2>Employees</h2>
+
+@* Admin-only button to add a new employee — Step 1 of onboarding flow *@
+@if (User.IsInRole("Admin"))
+{
+    <a asp-action="Create" class="btn btn-primary mb-3">+ Add Employee</a>
+}
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">No employees found.</div>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Studio Role</th>
+                <th>Certification</th>
+                <th>Hire Date</th>
+                <th>Vacation Balance</th>
+                <th>Sick Leave Balance</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var emp in Model)
+            {
+                <tr>
+                    <td>@emp.FirstName</td>
+                    <td>@emp.LastName</td>
+                    @* StudioRole is eager loaded in the controller so .RoleName works *@
+                    <td>@emp.StudioRole?.RoleName</td>
+                    <td>@(emp.Certification ?? "N/A")</td>
+                    <td>@emp.HireDate.ToString("yyyy-MM-dd")</td>
+                    <td>@emp.VacationBalance days</td>
+                    <td>@emp.SickLeaveBalance days</td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@emp.EmployeeId"
+                           class="btn btn-sm btn-info">Details</a>
+
+                        @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+                        {
+                            <a asp-action="Edit" asp-route-id="@emp.EmployeeId"
+                               class="btn btn-sm btn-warning">Edit</a>
+                        }
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <a asp-action="Delete" asp-route-id="@emp.EmployeeId"
+                               class="btn btn-sm btn-danger">Delete</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
