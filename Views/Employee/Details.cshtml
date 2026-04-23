@@ -36,8 +36,11 @@
 </div>
 
 <div class="mt-3">
+    <a asp-controller="Dashboard" asp-action="Index" class="btn btn-primary">Back to Dashboard</a>
+     @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+    {
     <a asp-action="Index" class="btn btn-secondary">Back to List</a>
-
+    }   
     @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
     {
         <a asp-action="Edit" asp-route-id="@Model.EmployeeId"

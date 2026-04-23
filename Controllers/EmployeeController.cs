@@ -32,7 +32,7 @@ namespace YogaStudioLRAManagementSystem.Controllers
         // GET: Employee/Details/5
         // DETAILS - Displays a single employee's full info
         // Returns 404 if the id is null or employee doesn't exist
-        [Authorize(Roles = "Admin,Manager")]
+        [Authorize(Roles = "Admin,Manager, Staff")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();

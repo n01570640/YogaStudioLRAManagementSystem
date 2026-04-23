@@ -98,7 +98,8 @@
                                 <ul class="dropdown-menu dropdown-menu-end">
 
                                     @* Staff-only personal items - routed to their own EmployeeId from claims *@
-                                    @if (User.IsInRole(UserRoles.STAFF))
+                                       
+                                    @if (User.IsInRole(UserRoles.STAFF) || (User.IsInRole(UserRoles.MANAGER)))
                                     {
                                         <li>
                                             <a class="dropdown-item" asp-controller="Employee" asp-action="Details"
