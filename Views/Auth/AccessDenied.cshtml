@@ -1,0 +1,18 @@
+﻿@{
+    ViewData["Title"] = "Access Denied";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="alert alert-danger" role="alert">
+                <h4 class="alert-heading">Access Denied!</h4>
+                <p>You do not have permission to acess this resource. Your user role does not grant access.</p>
+                <br />
+                <p class="mb-0">
+                    <a href="@Url.Action("Index", "Home")" class="btn btn-secondary">Back to Home</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

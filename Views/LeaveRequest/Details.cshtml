@@ -1,0 +1,52 @@
+﻿@using YogaStudioLRAManagementSystem.Constants
+@using System.Security.Claims
+@model YogaStudioLRAManagementSystem.Models.LeaveRequest
+
+@{
+    ViewData["Title"] = "Details";
+    var employeeId = int.Parse(User.FindFirstValue("EmployeeId"));
+}
+
+<h1>Leave Request Details</h1>
+
+<div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-4">Employee</dt>
+                <dd class="col-sm-8">@Model.Employee.FirstName, @Model.Employee.LastName</dd>
+                
+                <dt class = "col-sm-4">Start Date</dt>
+                <dd class="col-sm-8">@Model.StartDate.ToString("yyyy-MM-dd")</dd>
+                
+                <dt class = "col-sm-4">End Date</dt>
+                <dd class="col-sm-8">@Model.EndDate.ToString("yyyy-MM-dd")</dd>
+                
+                <dt class = "col-sm-4">Status</dt>
+                <dd class="col-sm-8">@Model.Status</dd>
+
+                <dt class = "col-sm-4">Reason</dt>
+                <dd class = "col-sm-8">@Model.Reason</dd>
+                
+                <dt class = "col-sm-4">Leave Type</dt>
+                <dd class = "col-sm-8">@Model.LeaveType.Name</dd>
+            </dl>
+        </div>
+    </div>
+</div>
+<div class="mt-3">
+    @if (User.IsInRole("Manager") || User.IsInRole("Admin"))
+    {
+        @if(employeeId != Model?.EmployeeId)
+        {
+            <a asp-action="Review" asp-route-requestId="@Model?.RequestId" class="btn btn-success">Review</a>
+        }        
+    }
+    @if(@Model?.Status == LeaveRequestStatus.PENDING)
+    {
+        <a asp-action="Edit" asp-route-requestId="@Model?.RequestId" class="btn btn-warning">Edit</a>
+        <a asp-action="Delete" asp-route-requestId="@Model?.RequestId" class="btn btn-danger">Delete</a>
+    }
+    <a asp-action="Index" class="btn btn-primary">Back to List</a>
+</div>

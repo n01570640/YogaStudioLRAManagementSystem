@@ -1,8 +1,77 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container mt-4">
+
+    @* Welcome title *@
+    <div class="card shadow-sm mb-4 border-0 bg-light">
+        <div class="card-body text-center py-5">
+            <h1 class="display-6 fw-bold mb-3">Yoga Studio Leave Request & Attendance Management</h1>
+            <p class="lead mb-2">A streamlined internal system for managing staff leave requests, daily attendance, and role-based oversight.</p>          
+        </div>
+    </div>
+
+    @* Features section *@
+    <h3 class="text-center mb-4">What This System Does</h3>
+
+    <div class="row g-4 mb-4 justify-content-center">
+
+        
+        @* Feature 1 - User Management *@
+        <div class="col-md-6 col-lg-5">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title text-primary">User & Employee Management</h5>
+                    <p class="card-text">
+                        Admins maintain employee profiles, leave balances, and studio roles, while managing user accounts, password resets, and role-based access with secure cookie authentication.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        @* Feature 2 - Leave Requests *@
+        <div class="col-md-6 col-lg-5">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title text-primary">Leave Requests</h5>
+                    <p class="card-text">
+                        Staff submit and track leave requests through an intuitive workflow. Managers review and approve or deny requests with full context.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        @* Feature 3 - Attendance *@
+        <div class="col-md-6 col-lg-5">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title text-primary">Attendance Tracking</h5>
+                    <p class="card-text">
+                        Daily clock in and clock out with automatic hour calculation. Managers and Admins view attendance reports filtered by employee, date, or status.
+                    </p>
+                </div>
+            </div>
+        </div>        
+
+        @* Feature 4 - Dashboards *@
+        <div class="col-md-6 col-lg-5">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title text-primary">Role-Based Dashboards</h5>
+                    <p class="card-text">
+                        Personalized dashboards for Staff, Managers, and Admins. Each role sees exactly the information they need to act on.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    @* Footer *@
+    <div class="text-center text-muted small mt-5 pb-3">
+        <p class="mb-1"><strong>CPAN 369 - Web Programming</strong></p>
+        <p class="mb-0">Built by Gurpreet, Stephanie, & Katherine</p>
+    </div>
+
 </div>

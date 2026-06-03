@@ -1,9 +1,15 @@
-﻿<!DOCTYPE html>
+﻿@using YogaStudioLRAManagementSystem.Constants
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - YogaStudioLRAManagementSystem</title>
+    @* JWT token for AttendanceAPI fetch calls only rendered when user is logged in  *@
+    @if (User.Identity != null && User.Identity.IsAuthenticated)
+        {
+            <meta name="jwt-token" content="@Context.Session.GetString("jwt")" />
+        }
+        <title>@ViewData["Title"] - Yoga Studio LRA Management </title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/YogaStudioLRAManagementSystem.styles.css" asp-append-version="true" />
@@ -12,19 +18,129 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">YogaStudioLRAManagementSystem</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Yoga Studio LRA Management</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
+
+                        @if (User.Identity != null && User.Identity.IsAuthenticated)
+                        {
+                            @* Dashboard - all authenticated roles (controller not built yet, will be role-based) *@
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Dashboard" asp-action="Index">Dashboard</a>
+                            </li>
+
+                            @* Leave Requests - single link; Index shows role-based sections via LeaveRequestIndexViewModel *@
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="LeaveRequest" asp-action="Index">Leave Requests</a>
+                            </li>
+
+                            @* Clock In - Staff only, top-level since it's the most frequent action *@
+                            @if (User.IsInRole(UserRoles.STAFF))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Attendance" asp-action="ClockIn">Clock In</a>
+                                </li>
+                            }
+
+                            @* Team Records dropdown - Manager and Admin *@
+                            @if (User.IsInRole(UserRoles.MANAGER) || User.IsInRole(UserRoles.ADMIN))
+                            {
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle text-dark" href="#" role="button"
+                                           data-bs-toggle="dropdown" aria-expanded="false">
+                                        Team Records
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <a class="dropdown-item" asp-controller="Employee" asp-action="Index">Employees</a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-controller="Attendance" asp-action="Index">Attendance Report</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            }
+
+                            @* Admin Tools dropdown - Admin only *@
+                            @if (User.IsInRole(UserRoles.ADMIN))
+                            {
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle text-dark" href="#" role="button"
+                                           data-bs-toggle="dropdown" aria-expanded="false">
+                                        Admin Tools
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <a class="dropdown-item" asp-controller="Auth" asp-action="Register">Register a User</a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-controller="User" asp-action="Index">Manage Users</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            }
+                        }
+                    </ul>
+
+                    <ul class="navbar-nav">
+                        @if (User.Identity != null && User.Identity.IsAuthenticated)
+                        {
+                            @* Welcome dropdown - personal items for all roles; Staff gets extra personal links *@
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-dark" href="#" role="button"
+                                       data-bs-toggle="dropdown" aria-expanded="false">
+                                    Welcome, <strong>@User.Identity.Name</strong>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end">
+
+                                    @* Staff-only personal items - routed to their own EmployeeId from claims *@
+                                       
+                                    @if (User.IsInRole(UserRoles.STAFF) || (User.IsInRole(UserRoles.MANAGER)))
+                                    {
+                                        <li>
+                                            <a class="dropdown-item" asp-controller="Employee" asp-action="Details"
+                                               asp-route-id="@User.FindFirst("EmployeeId")?.Value">My Details</a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-controller="Attendance" asp-action="Index">My Attendance</a>
+                                        </li>
+                                        <li><hr class="dropdown-divider" /></li>
+                                    }
+
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Auth" asp-action="ChangePassword">Change Password</a>
+                                    </li>
+                                    <li><hr class="dropdown-divider" /></li>
+                                    <li>
+                                        @* Logout as a form for CSRF protection *@
+                                        <form asp-action="Logout" asp-controller="Auth" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="dropdown-item text-danger">Logout</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                        else
+                        {
+                            @* Show Login button only when on register page and Register button when on Login page *@
+                            @if (ViewData["HideLogin"] == null)
+                            {
+                                <li class="nav-item">
+                                    <a class="btn btn-primary btn-sm" asp-area="" asp-controller="Auth" asp-action="Login">Login</a>
+                                </li>
+                            }
+                            @if (ViewData["HideRegister"] == null)
+                            {
+                                <li class="nav-item ms-2">
+                                    <a class="btn btn-outline-primary btn-sm" asp-area="" asp-controller="Auth" asp-action="Register">Register</a>
+                                </li>
+                            }
+                        }
                     </ul>
                 </div>
             </div>
@@ -36,10 +152,9 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer class="border-top footer text-muted text-center">
         <div class="container">
-            &copy; 2026 - YogaStudioLRAManagementSystem - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
+            &copy; 2026 - Yoga Studio Leave Request & Attendance Management - CPAN 369 Final Project 
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

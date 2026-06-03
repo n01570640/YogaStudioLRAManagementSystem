@@ -15,6 +15,11 @@ namespace YogaStudioLRAManagementSystem.Controllers
 
         public IActionResult Index()
         {
+            //if user authenticated - redirect to the role based dashboard
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Dashboard");
+            }
             return View();
         }
 

@@ -1,0 +1,196 @@
+﻿@model YogaStudioLRAManagementSystem.ViewModels.LeaveRequestViewModel
+@using YogaStudioLRAManagementSystem.Constants
+
+<h2>Leave Requests</h2>
+
+@if(!User.IsInRole("Admin"))
+{
+    <a asp-action="Create" class="btn btn-primary">Submit New Request</a>
+}
+
+<hr />
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["Error"]
+    </div>
+}
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Success"]
+    </div>
+}
+
+@if (!User.IsInRole("Admin"))
+{
+    <div class="card mb-4 shadow-sm">
+        <h4 class="card-header">My Requests</h4>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th>Status</th>
+                        <th>Reason</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.MyRequests)
+                    {
+                        <tr>
+                            <td>@item.StartDate.ToString()</td>
+                            <td>@item.EndDate.ToString()</td>
+                            <td>
+                                @{
+                                    var badgeClass = item.Status switch
+                                    {
+                                        var s when s == LeaveRequestStatus.APPROVED => "badge bg-success",
+                                        var s when s == LeaveRequestStatus.PENDING => "badge bg-warning text-dark",
+                                        var s when s == LeaveRequestStatus.DENIED => "badge bg-danger",
+                                        _ => "badge bg-secondary"
+                                    };
+                                }
+                                <span class="@badgeClass">@item.Status</span>
+                            </td>
+                            <td>@item.Reason</td>
+                            <td>
+                                <a asp-action="Details" asp-route-requestId="@item.RequestId"
+                                   class="btn btn-sm btn-info">Details</a>
+
+                                @if (item.Status == LeaveRequestStatus.PENDING)
+                                {
+                                    <a asp-action="Edit" asp-route-requestId="@item.RequestId"
+                                       class="btn btn-sm btn-warning">Edit</a>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+@if (User.IsInRole("Manager"))
+{
+    <div class="card mb-4 shadow-sm">
+        <h4 class="card-header">Team Requests</h4>
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Employee</th>
+                        <th>Employee ID</th>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th>Status</th>
+                        <th>Reason</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.TeamRequests)
+                    {
+                        <tr>
+                            <td>@item.Employee.FirstName, @item.Employee.LastName</td>
+                            <td>@item.Employee.EmployeeId</td>
+                            <td>@item.StartDate.ToString()</td>
+                            <td>@item.EndDate.ToString()</td>
+                            <td>
+                                @{
+                                    var badgeClass = item.Status switch
+                                    {
+                                        var s when s == LeaveRequestStatus.APPROVED => "badge bg-success",
+                                        var s when s == LeaveRequestStatus.PENDING => "badge bg-warning text-dark",
+                                        var s when s == LeaveRequestStatus.DENIED => "badge bg-danger",
+                                        _ => "badge bg-secondary"
+                                    };
+                                }
+                                <span class="@badgeClass">@item.Status</span>
+                            </td>
+                            <td>@item.Reason</td>
+                            <td>
+                                <a asp-action="Details" asp-route-requestId="@item.RequestId"
+                                   class="btn btn-sm btn-info">Details</a>
+                                <a asp-action="Review" asp-route-requestId="@item.RequestId"
+                                   class="btn btn-sm btn-success">Review</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+@if (User.IsInRole("Admin"))
+{
+    <div class="card mb-4 shadow-sm">
+        <h4 class="card-header">All Requests</h4>
+        <div class="card-body">
+            <form method="get" class="mb-3">
+                <label>Status</label>
+                <select name="statusFilter" class="form-control">
+                    <option value="">All</option>
+                    <option value="@LeaveRequestStatus.PENDING">Pending</option>
+                    <option value="@LeaveRequestStatus.APPROVED">Approved</option>
+                    <option value="@LeaveRequestStatus.DENIED">Denied</option>
+                </select>
+
+                <label>Employee ID</label>
+                <input type="number" name="employeeIdFilter" class="form-control" />
+
+                <button type="submit" class="btn btn-primary mt-2">Filter</button>
+            </form>
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Employee</th>
+                        <th>Employee ID</th>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th>Status</th>
+                        <th>Reason</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.AllRequests)
+                    {
+                        <tr>
+                            <td>@item.Employee.FirstName</td>
+                            <td>@item.Employee.EmployeeId</td>
+                            <td>@item.StartDate.ToString()</td>
+                            <td>@item.EndDate.ToString()</td>
+                            <td>
+                                @{
+                                    var badgeClass = item.Status switch
+                                    {
+                                        var s when s == LeaveRequestStatus.APPROVED => "badge bg-success",
+                                        var s when s == LeaveRequestStatus.PENDING => "badge bg-warning text-dark",
+                                        var s when s == LeaveRequestStatus.DENIED => "badge bg-danger",
+                                        _ => "badge bg-secondary"
+                                    };
+                                }
+                                <span class="@badgeClass">@item.Status</span>
+                            </td>
+                            <td>@item.Reason</td>
+                            <td>
+                                <a asp-action="Details" asp-route-requestId="@item.RequestId"
+                                   class="btn btn-sm btn-info">Details</a> 
+                                <a asp-action="Review" asp-route-requestId="@item.RequestId"
+                                   class="btn btn-sm btn-success">Review</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
